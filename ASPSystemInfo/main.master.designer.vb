@@ -14,6 +14,15 @@ Option Explicit On
 Partial Public Class main
 
     '''<summary>
+    '''cssmain control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents cssmain As Global.System.Web.UI.HtmlControls.HtmlLink
+
+    '''<summary>
     '''head control.
     '''</summary>
     '''<remarks>
@@ -66,6 +75,15 @@ Partial Public Class main
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents RPTDrives As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
+    '''RPTProcess control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents RPTProcess As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
     '''RPTProcessor control.

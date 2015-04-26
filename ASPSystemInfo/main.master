@@ -4,129 +4,228 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
+
+    <!-- RealFaviconGenerator code BEGIN -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/graphics/favicons/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="60x60" href="/graphics/favicons/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/graphics/favicons/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/graphics/favicons/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/graphics/favicons/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/graphics/favicons/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/graphics/favicons/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/graphics/favicons/apple-touch-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/graphics/favicons/apple-touch-icon-180x180.png" />
+    <link rel="icon" type="image/png" href="/graphics/favicons/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/graphics/favicons/favicon-194x194.png" sizes="194x194" />
+    <link rel="icon" type="image/png" href="/graphics/favicons/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/graphics/favicons/android-chrome-192x192.png" sizes="192x192" />
+    <link rel="icon" type="image/png" href="/graphics/favicons/favicon-16x16.png" sizes="16x16" />
+    <link rel="manifest" href="/graphics/favicons/manifest.json" />
+    <link rel="shortcut icon" href="/graphics/favicons/favicon.ico" />
+    <meta name="msapplication-TileColor" content="#00a300" />
+    <meta name="msapplication-TileImage" content="/graphics/favicons/mstile-144x144.png" />
+    <meta name="msapplication-config" content="/graphics/favicons/browserconfig.xml" />
+    <meta name="theme-color" content="#7fba00" />
+    <!-- RealFaviconGenerator code END -->
+
     <title>ASP.net System Information</title>
-    <link rel="stylesheet" type="text/css" href='<%=CurrentCSS%>'>
+    <link id="cssmain" rel="stylesheet" type="text/css" href="" runat="server" />
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
 </head>
 <body>
     <form id="form1" runat="server">
-        <div>
-            <h1>ASP.net System Information</h1>
-            <p>This is an introduction</p>
-            <p>This dropdown will allow on-the-fly CSS selection</p>
-            <asp:DropDownList ID="DropCSS" runat="server"></asp:DropDownList>
+        <div id="allcontent">
+            <div id="info">
+                <h1>ASP.net System Information</h1>
+                <p>This is an introduction</p>
+                <p>This dropdown will allow on-the-fly CSS selection</p>
+                <asp:DropDownList ID="DropCSS" runat="server" AutoPostBack="true" ViewStateMode="Enabled" EnableViewState="true"></asp:DropDownList>
 
-            <h2>System vital</h2>
-            <asp:Repeater ID="RPTBasic" runat="server">
-                <HeaderTemplate>
-                    <table>
-                        <tr>
-                            <th>Label</th>
-                            <th>Content</th>
+                <h2>System vital</h2>
+                <asp:Repeater ID="RPTBasic" runat="server">
+                    <HeaderTemplate>
+                        <table>
+                            <tr>
+                                <th>Label</th>
+                                <th>Content</th>
+                            </tr>
+                    </HeaderTemplate>
+                    <ItemTemplate>
+                        <tr class="lightrow">
+                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
+                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
                         </tr>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <tr>
-                        <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
-                        <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
-                    </tr>
-                </ItemTemplate>
-                <FooterTemplate>
-                    </table>
-                </FooterTemplate>
-            </asp:Repeater>
-
-            <asp:Repeater ID="RPTNetwork" runat="server">
-                <HeaderTemplate>
-                    <table>
-                        <tr>
-                            <th>Address</th>
-                            <th>Family</th>
+                    </ItemTemplate>
+                    <AlternatingItemTemplate>
+                        <tr class="darkrow">
+                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
+                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
                         </tr>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <tr>
-                        <td><%#CType(Container.DataItem, System.Net.IPAddress).ToString%></td>
-                        <td><%#CType(Container.DataItem, System.Net.IPAddress).AddressFamily.ToString%></td>
-                    </tr>
-                </ItemTemplate>
-                <FooterTemplate>
-                    </table>
-                </FooterTemplate>
-            </asp:Repeater>
+                    </AlternatingItemTemplate>
+                    <FooterTemplate>
+                        </table>
+                    </FooterTemplate>
+                </asp:Repeater>
 
-            <h2>Ready drives</h2>
-            <asp:Repeater ID="RPTDrives" runat="server">
-                <HeaderTemplate>
-                    <table style="width: 100%;">
+                <asp:Repeater ID="RPTNetwork" runat="server">
+                    <HeaderTemplate>
+                        <table>
+                            <tr>
+                                <th>Address</th>
+                                <th>Family</th>
+                            </tr>
+                    </HeaderTemplate>
+                    <ItemTemplate>
                         <tr>
-                            <th style="width: 20%;">Root folder</th>
-                            <th style="width: 20%;">Filesystem</th>
-                            <th style="width: 20%;">Use</th>
-                            <th style="width: 20%;">Total free space</th>
-                            <th style="width: 20%;">Total size</th>
+                            <td><%#CType(Container.DataItem, System.Net.IPAddress).ToString%></td>
+                            <td><%#CType(Container.DataItem, System.Net.IPAddress).AddressFamily.ToString%></td>
                         </tr>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <tr>
-                        <td><%#CType(Container.DataItem, System.IO.DriveInfo).RootDirectory.FullName%></td>
-                        <td><%#CType(Container.DataItem, System.IO.DriveInfo).DriveFormat%></td>
-                        <td>
-                            <%# math.floor((1-(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / CType(Container.DataItem, System.IO.DriveInfo).TotalSize)) * 100 ) %>%
-                            <div style='background-color: blue; height: 25px; width: <%# math.floor((1-(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / CType(Container.DataItem, System.IO.DriveInfo).TotalSize)) * 100 ) %>%'></div>
-                        </td>
-                        <td><%#Math.Floor(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / 1024 / 1024)%></td>
-                        <td><%#Math.Floor(CType(Container.DataItem, System.IO.DriveInfo).TotalSize / 1024 / 1024)%></td>
-                    </tr>
-                </ItemTemplate>
-                <FooterTemplate>
-                    </table>
-                </FooterTemplate>
-            </asp:Repeater>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                        </table>
+                    </FooterTemplate>
+                </asp:Repeater>
 
-            <asp:Repeater ID="RPTProcessor" runat="server">
-                <HeaderTemplate>
-                    <table>
+                <h2>Ready drives</h2>
+                <asp:Repeater ID="RPTDrives" runat="server">
+                    <HeaderTemplate>
+                        <table style="width: 100%;">
+                            <tr>
+                                <th style="width: 14%;">Root folder</th>
+                                <th style="width: 14%;">Filesystem</th>
+                                <th style="width: 14%;">VolumeLabel</th>
+                                <th style="width: 14%;">DriveType</th>
+                                <th style="width: 16%;">Use</th>
+                                <th style="width: 14%;">Total free space</th>
+                                <th style="width: 14%;">Total size</th>
+                            </tr>
+                    </HeaderTemplate>
+                    <ItemTemplate>
                         <tr>
-                            <th>Label</th>
-                            <th>Content</th>
+                            <td><%#CType(Container.DataItem, System.IO.DriveInfo).RootDirectory.FullName%></td>
+                            <td><%#CType(Container.DataItem, System.IO.DriveInfo).DriveFormat%></td>
+                            <td><%#CType(Container.DataItem, System.IO.DriveInfo).VolumeLabel%></td>
+                            <td><%#[Enum].GetName(GetType(System.IO.DriveType), CType(Container.DataItem, System.IO.DriveInfo).DriveType)%></td>
+                            <td>
+                                <%# math.floor((1-(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / CType(Container.DataItem, System.IO.DriveInfo).TotalSize)) * 100 ) %>%
+                            <div class="horizontalbar" style='width: <%# math.floor((1-(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / CType(Container.DataItem, System.IO.DriveInfo).TotalSize)) * 100 ) %>%'></div>
+                            </td>
+                            <td><%#Math.Floor(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / 1024 / 1024)%></td>
+                            <td><%#Math.Floor(CType(Container.DataItem, System.IO.DriveInfo).TotalSize / 1024 / 1024)%></td>
                         </tr>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <tr>
-                        <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
-                        <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
-                    </tr>
-                </ItemTemplate>
-                <FooterTemplate>
-                    </table>
-                </FooterTemplate>
-            </asp:Repeater>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                        </table>
+                    </FooterTemplate>
+                </asp:Repeater>
 
-                   
-
-            <asp:Repeater ID="RPTVoltage" runat="server">
-                <HeaderTemplate>
-                    <table>
+                <h2>Win32 Process</h2>
+                <asp:Repeater ID="RPTProcess" runat="server">
+                    <HeaderTemplate>
+                        <table>
+                            <tr>
+                                <th>Caption</th>
+                                <th>ParentProcessId</th>
+                                <th>ProcessId</th>
+                                <th>ThreadCount</th>
+                            </tr>
+                    </HeaderTemplate>
+                    <ItemTemplate>
                         <tr>
-                            <th>Label</th>
-                            <th>Content</th>
+                            <asp:Repeater ID="RPTProcessColumns" DataSource="<%#CType(Container.DataItem, SystemInfo.ProcessInfo).Info%>" runat="server">
+                                <ItemTemplate>
+                                    <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
+                                </ItemTemplate>
+                            </asp:Repeater>
                         </tr>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <tr>
-                        <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
-                        <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
-                    </tr>
-                </ItemTemplate>
-                <FooterTemplate>
-                    </table>
-                </FooterTemplate>
-            </asp:Repeater>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                        </table>
+                    </FooterTemplate>
+                </asp:Repeater>
 
-            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
-            </asp:ContentPlaceHolder>
+                <h2>Win32 Processor</h2>
+                <asp:Repeater ID="RPTProcessor" runat="server">
+                    <HeaderTemplate>
+                        <table>
+                            <tr>
+                                <th>Label</th>
+                                <th>Content</th>
+                            </tr>
+                    </HeaderTemplate>
+                    <ItemTemplate>
+                        <tr>
+                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
+                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
+                        </tr>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                        </table>
+                    </FooterTemplate>
+                </asp:Repeater>
+
+
+                <h2>Voltage probe</h2>
+                <asp:Repeater ID="RPTVoltage" runat="server">
+                    <HeaderTemplate>
+                        <table>
+                            <tr>
+                                <th>Label</th>
+                                <th>Content</th>
+                            </tr>
+                    </HeaderTemplate>
+                    <ItemTemplate>
+                        <tr>
+                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
+                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
+                        </tr>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                        </table>
+                    </FooterTemplate>
+                </asp:Repeater>
+
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                </asp:ContentPlaceHolder>
+            </div>
+            <footer>
+                <div style="overflow: hidden;">
+                    <div style="width: 50%; float: left">
+                        <div id="footergithub">
+                            <h1>Github</h1>
+                            <p>This project is proudly hosted by GitHub</p>
+                            <!-- GitHub buttons BEGIN -->
+                            <iframe seamless="seamless" src="https://ghbtns.com/github-btn.html?user=lucamauri&repo=ASPSystemInfo&type=star&count=true&size=large" style="border-width: 0; height: 30px; overflow: hidden"></iframe>
+                            <br />
+                            <iframe seamless="seamless" src="https://ghbtns.com/github-btn.html?user=lucamauri&repo=ASPSystemInfo&type=watch&count=true&size=large&v=2" style="border-width: 0; height: 30px; overflow: hidden"></iframe>
+                            <br />
+                            <iframe seamless="seamless" src="https://ghbtns.com/github-btn.html?user=lucamauri&repo=ASPSystemInfo&type=fork&count=true&size=large" style="border-width: 0; height: 30px; overflow: hidden"></iframe>
+                            <br />
+                            <iframe seamless="seamless" src="https://ghbtns.com/github-btn.html?user=lucamauri&type=follow&count=true&size=large" style="border-width: 0; height: 30px; overflow: hidden"></iframe>
+                            <!-- GitHub buttons END -->
+                        </div>
+
+                        <div id="footertech">
+                            <h1>Technical details</h1>
+                            <p class="codefooter">
+                                Current date and time on server <%=DateTime.Now.ToUniversalTime.ToString("o")%><br />
+                                Environment version <%=System.Environment.Version%><br />
+                                Webserver version <em><%=Request.ServerVariables("SERVER_SOFTWARE")%></em>
+                            </p>
+                        </div>
+                    </div>
+                    <div style="width: 50%; float: left">
+                        <div id="footerlogo">
+                            <img src="graphics/ASPInfoLogo.png" width="200" />
+                        </div>
+
+                        <div id="footercredits">
+                            <h1>Credits</h1>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     </form>
 </body>

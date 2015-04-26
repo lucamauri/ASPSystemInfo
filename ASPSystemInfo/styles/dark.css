@@ -1,0 +1,30 @@
+﻿@import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono|PT+Serif+Caption);
+
+h1{
+    font-family: 'PT Serif Caption', serif;
+    font-size:28pt;
+    color:white;
+}
+
+h2{
+    font-family: 'PT Serif Caption', serif;
+    font-size:22pt;
+    color:white;
+}
+
+body {
+    font-family: 'Ubuntu Mono', monospace;
+    font-size:12pt;
+    background-color:black;
+    color:white;
+}
+
+.lightrow{
+    background-color:gray;
+    color: white;
+}
+
+.darkrow{
+    background-color:black;
+    color:white;
+}

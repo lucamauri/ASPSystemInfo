@@ -5,6 +5,8 @@ Imports System.IO
 Public Class main
     Inherits System.Web.UI.MasterPage
 
+    Public CurrentCSS As String
+
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim BasicVitals As List(Of ValuesPair)
         Dim CurrVital As ValuesPair
@@ -12,97 +14,111 @@ Public Class main
         Dim AllDrives() As DriveInfo
         Dim ReadyDrives() As DriveInfo
 
-        BasicVitals = New List(Of ValuesPair)
+        Dim GenericQuery As New WMIQuery
 
-        CurrVital = New ValuesPair("Operation System:", Environment.OSVersion.VersionString)
-        BasicVitals.Add(CurrVital)
+        Call FillCSS()
 
-        CurrVital = New ValuesPair("Hostname:", Dns.GetHostName().ToString)
-        BasicVitals.Add(CurrVital)
+        If Not IsPostBack Then
+            BasicVitals = New List(Of ValuesPair)
 
-        'CurrVital = New ValuesPair("IP Address:", Dns.GetHostAddresses(Dns.GetHostName())(0).ToString)
-        'BasicVitals.Add(CurrVital)
+            CurrVital = New ValuesPair("Operating System:", Environment.OSVersion.VersionString)
+            BasicVitals.Add(CurrVital)
 
-        CurrVital = New ValuesPair("IP Address:", Request.ServerVariables("LOCAL_ADDR"))
-        BasicVitals.Add(CurrVital)
+            CurrVital = New ValuesPair("Hostname:", Dns.GetHostName().ToString)
+            BasicVitals.Add(CurrVital)
 
-        CurrVital = New ValuesPair("Software:", Request.ServerVariables("SERVER_SOFTWARE"))
-        BasicVitals.Add(CurrVital)
+            'CurrVital = New ValuesPair("IP Address:", Dns.GetHostAddresses(Dns.GetHostName())(0).ToString)
+            'BasicVitals.Add(CurrVital)
 
-        CurrVital = New ValuesPair("Uptime:", GetUptime.ToString)
-        BasicVitals.Add(CurrVital)
+            CurrVital = New ValuesPair("IP Address:", Request.ServerVariables("LOCAL_ADDR"))
+            BasicVitals.Add(CurrVital)
 
-        CurrVital = New ValuesPair("Total processes", GetProcesses.ToString)
-        BasicVitals.Add(CurrVital)
+            CurrVital = New ValuesPair("Software:", Request.ServerVariables("SERVER_SOFTWARE"))
+            BasicVitals.Add(CurrVital)
 
-        CurrVital = New ValuesPair("Total threads", GetThreads.ToString)
-        BasicVitals.Add(CurrVital)
+            CurrVital = New ValuesPair("Uptime:", GetUptime.ToString)
+            BasicVitals.Add(CurrVital)
 
-        CurrVital = New ValuesPair("ASP System Information version", GetType(main).Assembly.GetName.Version.ToString)
-        BasicVitals.Add(CurrVital)
+            CurrVital = New ValuesPair("Total processes", GetProcessesCount.ToString)
+            BasicVitals.Add(CurrVital)
 
-        CurrVital = New ValuesPair("SystemPageSize(KB):", Environment.SystemPageSize / 1024)
-        BasicVitals.Add(CurrVital)
+            CurrVital = New ValuesPair("Total threads", GetThreadsCount.ToString)
+            BasicVitals.Add(CurrVital)
 
-        CurrVital = New ValuesPair("Version:", Environment.Version.ToString)
-        BasicVitals.Add(CurrVital)
+            CurrVital = New ValuesPair("ASP System Information version", GetType(main).Assembly.GetName.Version.ToString)
+            BasicVitals.Add(CurrVital)
 
+            CurrVital = New ValuesPair("System Page Size (KB):", Environment.SystemPageSize / 1024)
+            BasicVitals.Add(CurrVital)
 
-
-
-        RPTBasic.DataSource = BasicVitals
-        RPTBasic.DataBind()
-
-        RPTNetwork.DataSource = Dns.GetHostAddresses(Dns.GetHostName())
-        RPTNetwork.DataBind()
+            CurrVital = New ValuesPair("Environment version:", Environment.Version.ToString)
+            BasicVitals.Add(CurrVital)
 
 
-        With RPTProcessor
-            .DataSource = DeviceInformation("Win32_Processor")
-            .DataBind()
-        End With
 
-        AllDrives = DriveInfo.GetDrives
 
-        For Each Drive As DriveInfo In AllDrives
-            If Drive.IsReady Then
-                If ReadyDrives Is Nothing Then
-                    ReDim ReadyDrives(0)
-                Else
-                    ReDim Preserve ReadyDrives(ReadyDrives.GetUpperBound(0) + 1)
+            RPTBasic.DataSource = BasicVitals
+            RPTBasic.DataBind()
+
+            RPTNetwork.DataSource = Dns.GetHostAddresses(Dns.GetHostName())
+            RPTNetwork.DataBind()
+
+
+            With RPTProcessor
+                .DataSource = DeviceInformation("Win32_Processor")
+                .DataBind()
+            End With
+
+            AllDrives = DriveInfo.GetDrives
+
+            For Each Drive As DriveInfo In AllDrives
+                If Drive.IsReady Then
+                    If ReadyDrives Is Nothing Then
+                        ReDim ReadyDrives(0)
+                    Else
+                        ReDim Preserve ReadyDrives(ReadyDrives.GetUpperBound(0) + 1)
+                    End If
+                    'ReDim Preserve ReadyDrives(ReadyDrives.GetUpperBound(0) + 1)
+                    ReadyDrives(ReadyDrives.GetUpperBound(0)) = Drive
                 End If
-                ReadyDrives(ReadyDrives.GetUpperBound(0)) = Drive
-            End If
-        Next
-        rptDrives.DataSource = readyDrives
-        rptDrives.DataBind()
+            Next
+            RPTDrives.DataSource = ReadyDrives
+            RPTDrives.DataBind()
 
-        With RPTVoltage
-            .DataSource = DeviceInformation("Win32_VoltageProbe")
-            .DataBind()
-        End With
+            With RPTProcess
+                '.DataSource = DeviceInformation("Win32_Process")
+                '.DataSource = GenericQuery.ProcessesDetails
+                .DataSource = ProcessesDetails()
+                .DataBind()
+            End With
 
-        'Dim WMICrawler As ManagementObjectSearcher
-        'Dim Row As New System.Web.UI.WebControls.TableRow
 
-        'WMICrawler = New ManagementObjectSearcher("Select  *  from  Win32_Processor")
+            With RPTVoltage
+                .DataSource = DeviceInformation("Win32_VoltageProbe")
+                .DataBind()
+            End With
 
-        'For Each Service As ManagementObject In WMICrawler.Get
-        '    Row.Cells(0).Text = Service("Caption")
-        '    tblMain.Rows.Add(Row)
-        'Next
+            'Dim WMICrawler As ManagementObjectSearcher
+            'Dim Row As New System.Web.UI.WebControls.TableRow
 
+            'WMICrawler = New ManagementObjectSearcher("Select  *  from  Win32_Processor")
+
+            'For Each Service As ManagementObject In WMICrawler.Get
+            '    Row.Cells(0).Text = Service("Caption")
+            '    tblMain.Rows.Add(Row)
+            'Next
+        End If
     End Sub
     Public Function GetUptime() As TimeSpan
         Dim mo As New ManagementObject("\\.\root\cimv2:Win32_OperatingSystem=@")
         Dim lastBootUp As DateTime = ManagementDateTimeConverter.ToDateTime(mo("LastBootUpTime").ToString())
         Return DateTime.Now.ToUniversalTime() - lastBootUp.ToUniversalTime()
     End Function
-    Public Function GetProcesses() As Integer
+    Public Function GetProcessesCount() As Integer
         Dim searchCIMV2 As New ManagementObjectSearcher("root\CIMV2", "SELECT * FROM CIM_Process")
         Return searchCIMV2.Get.Count
     End Function
-    Public Function GetThreads() As Integer
+    Public Function GetThreadsCount() As Integer
         Dim searchCIMV2 As New ManagementObjectSearcher("root\CIMV2", "SELECT * FROM CIM_Thread")
         Return searchCIMV2.Get.Count
     End Function
@@ -128,5 +144,66 @@ Public Class main
         Next
         Return AllInfo
     End Function
+    Sub FillCSS()
+        If Not IsPostBack Then
+            For Each CurrFile As FileInfo In New DirectoryInfo(Hosting.HostingEnvironment.MapPath("\styles")).EnumerateFiles
+                If CurrFile.Extension.ToLower = ".css" Then
+                    DropCSS.Items.Add(CurrFile.Name)
+                End If
+            Next
+            'CurrentCSS = "'../styles/default.css'"
+            Call SetCSS("default.css")
+        End If
+    End Sub
 
+    Private Sub DropCSS_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropCSS.SelectedIndexChanged
+        Call SetCSS(DropCSS.SelectedValue)
+    End Sub
+
+
+
+    Private Sub SetCSS(HRef As String)
+        'Dim CSSLink As HtmlLink
+
+        'Try
+        '    'CSSLink.FindControl("cssmain")
+        '    Page.Header.Controls.Remove(Page.Header.FindControl("cssmain"))
+        'Catch ex As Exception
+
+        'End Try
+
+        'CSSLink = New HtmlLink()
+
+        'With CSSLink
+        '    .Href = HRef
+        '    .Attributes.Add("id", "cssmain")
+        '    .Attributes.Add("rel", "stylesheet")
+        '    .Attributes.Add("type", "text/css")
+        'End With
+        'Page.Header.Controls.Add(CSSLink)
+        cssmain.Href = "../styles/" & HRef
+        DropCSS.ClearSelection()
+        DropCSS.Items.FindByValue(HRef).Selected = True
+    End Sub
+    Function ProcessesDetails() As List(Of ProcessInfo)
+        'TODO delete this function and use the one from _WMIQuery_ class
+        Dim Info As ValuesPair
+        'Dim AllInfo As New List(Of ValuesPair)
+        Dim AllProcesses As New List(Of ProcessInfo)
+        Dim ProcessesSearcher As New ManagementObjectSearcher("root\CIMV2", "SELECT * FROM CIM_Process")
+        Dim ProcessesCollection As ManagementObjectCollection = ProcessesSearcher.Get
+
+        For Each Process As ManagementObject In ProcessesCollection
+            Dim CurrProcess = New ProcessInfo
+            For Each ProcessProperty As PropertyData In Process.Properties
+                Select Case ProcessProperty.Name
+                    Case "Caption", "ParentProcessId", "ProcessId", "ThreadCount"
+                        Info = New ValuesPair(ProcessProperty.Name, ProcessProperty.Value.ToString())
+                        CurrProcess.Info.Add(Info)
+                End Select
+            Next
+            AllProcesses.Add(CurrProcess)
+        Next
+        Return AllProcesses
+    End Function
 End Class
