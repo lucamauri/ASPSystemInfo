@@ -42,8 +42,84 @@
                 <p>This dropdown will allow on-the-fly CSS selection</p>
                 <asp:DropDownList ID="DropCSS" runat="server" AutoPostBack="true" ViewStateMode="Enabled" EnableViewState="true"></asp:DropDownList>
 
-                <h2>System vital</h2>
-                <asp:Repeater ID="RPTBasic" runat="server">
+                <div style="overflow: hidden;">
+                    <div style="width: 50%; float: left">
+                        <h2>System vital</h2>
+                        <asp:Repeater ID="RPTBasic" runat="server">
+                            <HeaderTemplate>
+                                <table>
+                                    <tr>
+                                        <th>Label</th>
+                                        <th>Content</th>
+                                    </tr>
+                            </HeaderTemplate>
+                            <ItemTemplate>
+                                <tr class="lightrow">
+                                    <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
+                                    <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
+                                </tr>
+                            </ItemTemplate>
+                            <AlternatingItemTemplate>
+                                <tr class="darkrow">
+                                    <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
+                                    <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
+                                </tr>
+                            </AlternatingItemTemplate>
+                            <FooterTemplate>
+                                </table>
+                            </FooterTemplate>
+                        </asp:Repeater>
+                    </div>
+                    <div style="width: 50%; float: left">
+                        <h2>Network</h2>
+                        <asp:Repeater ID="RPTNetwork" runat="server">
+                            <HeaderTemplate>
+                                <table>
+                                    <tr>
+                                        <th>Address</th>
+                                        <th>Family</th>
+                                    </tr>
+                            </HeaderTemplate>
+                            <ItemTemplate>
+                                <tr>
+                                    <td><%#CType(Container.DataItem, System.Net.IPAddress).ToString%></td>
+                                    <td><%#CType(Container.DataItem, System.Net.IPAddress).AddressFamily.ToString%></td>
+                                </tr>
+                            </ItemTemplate>
+                            <FooterTemplate>
+                                </table>
+                            </FooterTemplate>
+                        </asp:Repeater>
+                        <h2>Network Details</h2>
+                <asp:Repeater ID="RPTNetDetails" runat="server">
+                    <HeaderTemplate>
+                        <table>
+                            <tr>
+                                <th id="BytesReceivedPersec">Bytes Received/sec</th>
+                                <th id="BytesSentPersec">Bytes Sent/sec</th>
+                                <th id="BytesTotalPersec">Bytes Total/sec</th>
+                                <th id="CurrentBandwidth">Current Bandwidth (bps)</th>
+                                <th>Name</th>
+                            </tr>
+                    </HeaderTemplate>
+                    <ItemTemplate>
+                        <tr>
+                            <asp:Repeater ID="RPTNetDetailsColumns" DataSource="<%#CType(Container.DataItem, SystemInfo.GenericInfo).Info%>" runat="server">
+                                <ItemTemplate>
+                                    <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
+                                </ItemTemplate>
+                            </asp:Repeater>
+                        </tr>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                        </table>
+                    </FooterTemplate>
+                </asp:Repeater>
+                    </div>
+                </div>
+
+                <h2>Memory usage</h2>
+                <asp:Repeater ID="RPTMemory" runat="server">
                     <HeaderTemplate>
                         <table>
                             <tr>
@@ -52,40 +128,17 @@
                             </tr>
                     </HeaderTemplate>
                     <ItemTemplate>
-                        <tr class="lightrow">
+                        <tr>
                             <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
                             <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
                         </tr>
                     </ItemTemplate>
-                    <AlternatingItemTemplate>
-                        <tr class="darkrow">
-                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
-                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
-                        </tr>
-                    </AlternatingItemTemplate>
                     <FooterTemplate>
                         </table>
                     </FooterTemplate>
                 </asp:Repeater>
 
-                <asp:Repeater ID="RPTNetwork" runat="server">
-                    <HeaderTemplate>
-                        <table>
-                            <tr>
-                                <th>Address</th>
-                                <th>Family</th>
-                            </tr>
-                    </HeaderTemplate>
-                    <ItemTemplate>
-                        <tr>
-                            <td><%#CType(Container.DataItem, System.Net.IPAddress).ToString%></td>
-                            <td><%#CType(Container.DataItem, System.Net.IPAddress).AddressFamily.ToString%></td>
-                        </tr>
-                    </ItemTemplate>
-                    <FooterTemplate>
-                        </table>
-                    </FooterTemplate>
-                </asp:Repeater>
+
 
                 <h2>Ready drives</h2>
                 <asp:Repeater ID="RPTDrives" runat="server">
@@ -107,9 +160,10 @@
                             <td><%#CType(Container.DataItem, System.IO.DriveInfo).DriveFormat%></td>
                             <td><%#CType(Container.DataItem, System.IO.DriveInfo).VolumeLabel%></td>
                             <td><%#[Enum].GetName(GetType(System.IO.DriveType), CType(Container.DataItem, System.IO.DriveInfo).DriveType)%></td>
-                            <td>
-                                <%# math.floor((1-(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / CType(Container.DataItem, System.IO.DriveInfo).TotalSize)) * 100 ) %>%
-                            <div class="horizontalbar" style='width: <%# math.floor((1-(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / CType(Container.DataItem, System.IO.DriveInfo).TotalSize)) * 100 ) %>%'></div>
+                            <td><%# math.floor((1-(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / CType(Container.DataItem, System.IO.DriveInfo).TotalSize)) * 100 ) %>%
+                                <div class="horizontalbarbackground">
+                                    <div class="horizontalbar" style='width: <%# math.floor((1-(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / CType(Container.DataItem, System.IO.DriveInfo).TotalSize)) * 100 ) %>%'></div>
+                                </div>
                             </td>
                             <td><%#Math.Floor(CType(Container.DataItem, System.IO.DriveInfo).TotalFreeSpace / 1024 / 1024)%></td>
                             <td><%#Math.Floor(CType(Container.DataItem, System.IO.DriveInfo).TotalSize / 1024 / 1024)%></td>
@@ -119,6 +173,10 @@
                         </table>
                     </FooterTemplate>
                 </asp:Repeater>
+
+                
+
+
 
                 <h2>Win32 Process</h2>
                 <asp:Repeater ID="RPTProcess" runat="server">
@@ -147,6 +205,26 @@
 
                 <h2>Win32 Processor</h2>
                 <asp:Repeater ID="RPTProcessor" runat="server">
+                    <HeaderTemplate>
+                        <table>
+                            <tr>
+                                <th>Label</th>
+                                <th>Content</th>
+                            </tr>
+                    </HeaderTemplate>
+                    <ItemTemplate>
+                        <tr>
+                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Label%></td>
+                            <td><%#CType(Container.DataItem, SystemInfo.ValuesPair).Content%></td>
+                        </tr>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                        </table>
+                    </FooterTemplate>
+                </asp:Repeater>
+
+                <h2>Operating System</h2>
+                <asp:Repeater ID="RPTOS" runat="server">
                     <HeaderTemplate>
                         <table>
                             <tr>

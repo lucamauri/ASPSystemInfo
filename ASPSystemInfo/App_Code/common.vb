@@ -41,3 +41,19 @@ Public Class ProcessInfo
         _Infos = New List(Of ValuesPair)
     End Sub
 End Class
+Public Class GenericInfo
+    Private _Infos As List(Of ValuesPair)
+
+    Public Property Info() As List(Of ValuesPair)
+        Get
+            Return _Infos
+        End Get
+        Set(ByVal value As List(Of ValuesPair))
+            _Infos = value
+        End Set
+    End Property
+
+    Public Sub New()
+        _Infos = New List(Of ValuesPair)
+    End Sub
+End Class

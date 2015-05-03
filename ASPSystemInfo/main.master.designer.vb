@@ -68,6 +68,24 @@ Partial Public Class main
     Protected WithEvents RPTNetwork As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
+    '''RPTNetDetails control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents RPTNetDetails As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
+    '''RPTMemory control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents RPTMemory As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
     '''RPTDrives control.
     '''</summary>
     '''<remarks>
@@ -93,6 +111,15 @@ Partial Public Class main
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents RPTProcessor As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
+    '''RPTOS control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents RPTOS As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
     '''RPTVoltage control.

@@ -14,6 +14,8 @@ Public Class main
         Dim AllDrives() As DriveInfo
         Dim ReadyDrives() As DriveInfo
 
+        Dim CPUCounter As PerformanceCounter
+
         Dim GenericQuery As New WMIQuery
 
         Call FillCSS()
@@ -24,11 +26,15 @@ Public Class main
             CurrVital = New ValuesPair("Operating System:", Environment.OSVersion.VersionString)
             BasicVitals.Add(CurrVital)
 
-            CurrVital = New ValuesPair("Hostname:", Dns.GetHostName().ToString)
+            If Environment.Is64BitOperatingSystem Then
+                CurrVital = New ValuesPair("Architecture:", "64-bit")
+            Else
+                CurrVital = New ValuesPair("Architecture:", "32-bit")
+            End If
             BasicVitals.Add(CurrVital)
 
-            'CurrVital = New ValuesPair("IP Address:", Dns.GetHostAddresses(Dns.GetHostName())(0).ToString)
-            'BasicVitals.Add(CurrVital)
+            CurrVital = New ValuesPair("Hostname:", Dns.GetHostName().ToString)
+            BasicVitals.Add(CurrVital)
 
             CurrVital = New ValuesPair("IP Address:", Request.ServerVariables("LOCAL_ADDR"))
             BasicVitals.Add(CurrVital)
@@ -45,16 +51,24 @@ Public Class main
             CurrVital = New ValuesPair("Total threads", GetThreadsCount.ToString)
             BasicVitals.Add(CurrVital)
 
-            CurrVital = New ValuesPair("ASP System Information version", GetType(main).Assembly.GetName.Version.ToString)
+            CPUCounter = New PerformanceCounter
+
+            With CPUCounter
+                .CategoryName = "Processor"
+                .CounterName = "% Processor Time"
+                .InstanceName = "_Total"
+            End With
+            CPUCounter.NextValue()
+            System.Threading.Thread.Sleep(500)
+            CurrVital = New ValuesPair("Processor Time", CPUCounter.NextValue() & "%")
             BasicVitals.Add(CurrVital)
 
-            CurrVital = New ValuesPair("System Page Size (KB):", Environment.SystemPageSize / 1024)
+
+            CurrVital = New ValuesPair("ASP System Information version", GetType(main).Assembly.GetName.Version.ToString)
             BasicVitals.Add(CurrVital)
 
             CurrVital = New ValuesPair("Environment version:", Environment.Version.ToString)
             BasicVitals.Add(CurrVital)
-
-
 
 
             RPTBasic.DataSource = BasicVitals
@@ -92,9 +106,23 @@ Public Class main
                 .DataBind()
             End With
 
+            With RPTMemory
+                .DataSource = WMIMemory()
+                .DataBind()
+            End With
+
+            With RPTNetDetails
+                .DataSource = NetworkDetails()
+                .DataBind()
+            End With
 
             With RPTVoltage
                 .DataSource = DeviceInformation("Win32_VoltageProbe")
+                .DataBind()
+            End With
+
+            With RPTOS
+                .DataSource = DeviceInformation("Win32_OperatingSystem")
                 .DataBind()
             End With
 
@@ -205,5 +233,78 @@ Public Class main
             AllProcesses.Add(CurrProcess)
         Next
         Return AllProcesses
+    End Function
+    Function WMIDetails(Query As String, FieldsNames As String()) As List(Of ValuesPair)
+
+        Dim AllInfo As New List(Of ValuesPair)
+        Dim Info As ValuesPair
+        Dim WMIManagement As New ManagementClass(Query)
+        'Create a ManagementObjectCollection to loop through
+        Dim WMIManagementObjCol As ManagementObjectCollection = WMIManagement.GetInstances()
+        'Get the properties in the class
+        Dim Properties As PropertyDataCollection = WMIManagement.Properties
+        For Each MgmtObj As ManagementObject In WMIManagementObjCol
+            For Each WMIProperty As PropertyData In Properties
+                Select Case WMIProperty.Name
+                    Case FieldsNames(0), FieldsNames(1), FieldsNames(2), FieldsNames(3), FieldsNames(4), FieldsNames(5)
+                        Try
+                            Info = New ValuesPair(WMIProperty.Name, (CType(MgmtObj.Properties(WMIProperty.Name).Value, Integer) / 1024).ToString)
+                        Catch
+                            Info = New ValuesPair(WMIProperty.Name, "[error getting value]")
+                        End Try
+                        AllInfo.Add(Info)
+                End Select
+            Next
+
+        Next
+        Return AllInfo
+    End Function
+    Function WMIMemory() As List(Of ValuesPair)
+        Dim MemoryQueryStrings As String() = {"TotalVisibleMemorySize", "FreePhysicalMemory", "TotalVirtualMemorySize", "FreeVirtualMemory"}
+        Dim AllInfo As New List(Of ValuesPair)
+        Dim Info As ValuesPair
+        Dim WMIManagement As New ManagementClass("Win32_OperatingSystem")
+        'Create a ManagementObjectCollection to loop through
+        Dim WMIManagementObjCol As ManagementObjectCollection = WMIManagement.GetInstances()
+        'Get the properties in the class
+        Dim Properties As PropertyDataCollection = WMIManagement.Properties
+        For Each MgmtObj As ManagementObject In WMIManagementObjCol
+            For Each Query As String In MemoryQueryStrings
+                Info = New ValuesPair(Query, String.Format("{0:n}", CType(MgmtObj(Query).ToString, Single) / 1024))
+                AllInfo.Add(Info)
+            Next
+        Next
+        Return AllInfo
+    End Function
+    Function NetworkDetails() As List(Of GenericInfo)
+        Dim Info As ValuesPair
+        Dim NetworkQueryStrings As String() = {"Name", "BytesReceivedPersec", "BytesSentPersec", "BytesTotalPersec", "CurrentBandwidth"}
+        Dim AllNetwork As New List(Of GenericInfo)
+        Dim NetworkSearcher As New ManagementObjectSearcher("root\CIMV2", "SELECT * FROM Win32_PerfRawData_Tcpip_NetworkInterface")
+        Dim NetworkCollection As ManagementObjectCollection = NetworkSearcher.Get
+
+        For Each Network As ManagementObject In NetworkCollection
+            Dim CurrNetwork = New GenericInfo
+            For Each NetworkProperty As PropertyData In Network.Properties
+
+                'For Each Query As String In NetworkQueryStrings
+                '    Info = New ValuesPair(NetworkProperty.Name, NetworkProperty.Value.ToString())
+                '    CurrNetwork.Info.Add(Info)
+                'Next
+
+                Select Case NetworkProperty.Name
+                    Case "Name", "BytesReceivedPersec", "BytesSentPersec", "BytesTotalPersec", "CurrentBandwidth"
+                        Try
+                            Info = New ValuesPair(NetworkProperty.Name, NetworkProperty.Value.ToString())
+                        Catch ex As Exception
+                            Info = New ValuesPair(NetworkProperty.Name, ex.ToString)
+                        End Try
+
+                        CurrNetwork.Info.Add(Info)
+                End Select
+            Next
+            AllNetwork.Add(CurrNetwork)
+        Next
+        Return AllNetwork
     End Function
 End Class
